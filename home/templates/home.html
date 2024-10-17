@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if user.is_authenticated %}
+        {% for task in tasks %}
+            <article class="media content-section">
+             <div class="media-body">
+                 <div class="article-metadata">
+                      <a class="mr-2" href="#">{{ task.course }}</a>
+                 </div>
+                    <h2><a class="article-title" href="#">{{ task.title }}</a></h2>
+                    <p class="article-content">{{ task.description }}</p>
+            </div>
+            </article>
+        {% endfor %}
+
+    {% endif %}
+{% endblock content %}

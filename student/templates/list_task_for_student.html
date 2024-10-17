@@ -1,0 +1,41 @@
+﻿{% extends "base.html" %}
+{% block content %}
+{% if user.is_authenticated and user.is_student %}
+    {% for enrollment in user.student.enrollment_set.all %}
+        <h1>{{ enrollment.course.name }}</h1>
+        {% for task in enrollment.course.tasks.all %}
+            {% if not task.checked and task.id not in completed_tasks %}
+                <article class="media content-section">
+                    <div class="media-body">
+                        <h2><a class="article-title" href="{% url 'task_detail' task.id %}">{{ task.title }}</a></h2>
+                    </div>
+                </article>
+            {% endif %}
+        {% empty %}
+            <p>Нет заданий для этого курса.</p>
+        {% endfor %}
+    {% empty %}
+        <p>Вы не записаны ни на один курс.</p>
+    {% endfor %}
+
+    <!-- Добавление списка выполненных задач -->
+    <h2>Выполненные задачи</h2>
+    {% for result in user.student.result_set.all %}
+        <article class="media content-section">
+            <div class="media-body">
+                <h2><a class="article-title" href="{% url 'task_detail' result.task.id %}">{{ result.task.title }}</a></h2>
+                <p>Результат: {{ result.result }}</p>
+                {% for grade in result.task.grade_set.all %}
+                    {% if grade.student == user.student %}
+                        <p>Оценка: {{ grade.grade }}</p>
+                    {% endif %}
+                {% empty %}
+                    <p>Оценка не выставлена</p>
+                {% endfor %}
+            </div>
+        </article>
+    {% empty %}
+        <p>У вас нет выполненных задач.</p>
+    {% endfor %}
+{% endif %}
+{% endblock content %}

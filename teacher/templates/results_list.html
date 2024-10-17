@@ -1,0 +1,41 @@
+﻿{% extends "base.html" %}
+{% block content %}
+{% if user.is_authenticated and user.is_teacher %}
+    <h1>Просмотр результатов по заданиям</h1>
+    {% for course in user.teacher.course_set.all %}
+        <h2>{{ course.name }}</h2>
+        {% for task in course.tasks.all %}
+            <article class="media content-section">
+                <div class="media-body">
+                    <h3><a class="article-title" href="{% url 'task_detail' task.id %}">{{ task.title }}</a></h3>
+                    <p>{{ task.description }}</p>
+                    <h4>Результаты:</h4>
+                    {% for result in task.result_set.all %}
+                        <div class="card border-primary mb-3">
+                            <div class="card-header">{{ result.student.user.username }}</div>
+                            <div class="card-body">
+                              <p class="card-text"> {{ result.result }}</p>
+                                {% if not result.is_checked %} <!-- Проверка наличия оценки -->
+                                    <form method="post" action="{% url 'grade_task' task.id result.student.id %}">
+                                        {% csrf_token %}
+                                        {{ form }}
+                                        <button type="submit" class="btn btn-primary">Выставить оценку</button>
+                                    </form>
+                                {% else %}
+                                        <p>Оценка: {{ result.grade.grade }}</p> <!-- Отображение оценки -->
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>Результатов пока нет.</p>
+                    {% endfor %}
+                </div>
+            </article>
+        {% empty %}
+            <p>Нет заданий для этого курса.</p>
+        {% endfor %}
+    {% empty %}
+        <p>У вас нет курсов.</p>
+    {% endfor %}
+{% endif %}
+{% endblock content %}

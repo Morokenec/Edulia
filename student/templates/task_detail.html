@@ -1,0 +1,14 @@
+﻿{% extends "base.html" %}
+{% block content %}
+    {% if user.is_authenticated and user.is_student %}
+    <article class="media content-section">
+        <div class="media-body">
+            <h2 class="article-title">{{ object.title }}</h2>
+            <p class="article-content">{{ object.description }}</p>
+            {% if not object.checked and not student_has_result %}
+                <a href="{% url 'task_execute' object.id %}" class="btn btn-primary">Выполнить задачу</a>
+            {% endif %}
+        </div>
+    </article>
+    {% endif %}
+{% endblock content %}
